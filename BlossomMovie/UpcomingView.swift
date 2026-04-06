@@ -20,9 +20,11 @@ struct UpcomingView: View {
                     ProgressView()
                         .frame(width: geo.size.width, height: geo.size.height)
                 case .success:
-                    VerticalListView(titles: Title.previewTitles)
+                    VerticalListView(titles: Title.previewTitles, canDelete: false)
                 case .failure(let underlyingError):
                     Text(underlyingError.localizedDescription)
+                        .errorMessage()
+                        .frame(width: geo.size.width, height: geo.size.height)
                 }
             }
             .task {
