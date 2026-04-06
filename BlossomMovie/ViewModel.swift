@@ -16,11 +16,15 @@ class ViewModel {
         case failure(underlyingError: Error)
     }
     private(set) var homeStatus: FetchStatus = .notStarted
+    private(set) var videoIdStatus: FetchStatus = .notStarted
+    
     private let dataFetcher = DataFetcher()
     var trendingMovies: [Title] = []
     var trendingTV: [Title] = []
     var topRatedMovies: [Title] = []
     var topRatedTV: [Title] = []
+    var heroTitle = Title.previewTitles[0]
+    var videoId = ""
     
     func getTitles() async {
         homeStatus = .fetching
@@ -36,6 +40,11 @@ class ViewModel {
                 trendingTV = try await tTV
                 topRatedMovies = try await tRMovies
                 topRatedTV = try await tRTV
+                
+                if let title = trendingMovies.randomElement() {
+                    heroTitle = title
+                }
+                
                 homeStatus = .fetching
             } catch {
                 print(error)
@@ -43,6 +52,18 @@ class ViewModel {
             }
         } else {
             homeStatus = .success
+        }
+    }
+    
+    func getVideoId(for title: String) async {
+        videoIdStatus = .fetching
+        
+        do {
+            videoId = try await dataFetcher.fetchVideoId(for: title)
+            videoIdStatus = .success
+        } catch {
+            print(error)
+            videoIdStatus = .failure(underlyingError: error)
         }
     }
 }
